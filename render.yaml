@@ -3,4 +3,7 @@ services:
     name: pfdo-chat
     runtime: python
     buildCommand: pip install flask flask-cors requests
-    startCommand: python backend/main.py
+    startCommand: cd backend && python main.py
+    envVars:
+      - key: PORT
+        value: 8000
