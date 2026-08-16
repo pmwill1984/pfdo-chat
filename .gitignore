@@ -1,0 +1,10 @@
+*.json
+*.gz
+*.db
+*.sqlite
+__pycache__/
+*.pyc
+venv/
+.vercel/
+node_modules/
+*.log
