@@ -202,7 +202,13 @@ def stats():
 
 @app.route("/")
 def index():
-    return jsonify({"name": "ChatBolt ПФДО", "status": "active"})
+    """Отдаём frontend"""
+    frontend_path = os.path.join(os.path.dirname(__file__), "..", "frontend", "index.html")
+    try:
+        with open(frontend_path, "r", encoding="utf-8") as f:
+            return f.read()
+    except:
+        return jsonify({"name": "ChatBolt ПФДО", "status": "active", "message": "Frontend не найден"})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
