@@ -9,4 +9,4 @@ build:
 
 run:
   command: cd backend && python main.py
-  port: 8000
+  port: 80
