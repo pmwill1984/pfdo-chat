@@ -1,0 +1,20 @@
+[
+    {
+        "name": "СШОР №1",
+        "inn": "1234567890",
+        "type": "sport",
+        "status": "active",
+        "city": "Москва",
+        "services": ["футбол", "баскетбол"],
+        "price": "2500"
+    },
+    {
+        "name": "Школа №123",
+        "inn": "1122334455",
+        "type": "school",
+        "status": "active",
+        "city": "Москва",
+        "services": ["образование"],
+        "price": "0"
+    }
+]
