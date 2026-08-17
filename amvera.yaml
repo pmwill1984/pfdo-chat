@@ -1,0 +1,13 @@
+meta:
+  environment: python
+  toolchain:
+    name: pip
+    version: "3.12"
+
+build:
+  requirements: backend/requirements.txt
+
+run:
+  command: cd backend && python main.py
+  port: 8000
+  persistenceMount: /data
