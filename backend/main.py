@@ -202,13 +202,22 @@ def stats():
 
 @app.route("/")
 def index():
-    """Отдаём frontend"""
-    frontend_path = os.path.join(os.path.dirname(__file__), "..", "frontend", "index.html")
-    try:
-        with open(frontend_path, "r", encoding="utf-8") as f:
-            return f.read()
-    except:
-        return jsonify({"name": "ChatBolt ПФДО", "status": "active", "message": "Frontend не найден"})
+    """Простая HTML страница"""
+    return """<!DOCTYPE html>
+<html>
+<head><title>ChatBolt ПФДО</title><meta charset="utf-8"></head>
+<body style="font-family:sans-serif;max-width:600px;margin:50px auto;padding:20px;background:#f0f4ff;border-radius:15px;">
+<h1>🤖 ChatBolt ПФДО</h1>
+<p>API работает! Используйте:</p>
+<ul>
+<li><code>?query=танцы</code> — поиск организаций</li>
+<li><code>1435177950</code> — проверка по ИНН</li>
+</ul>
+<form action="/" method="get">
+<input type="text" name="query" placeholder="Введите запрос..." style="padding:10px;width:300px;border-radius:8px;border:1px solid #ccc;">
+<button style="padding:10px 20px;background:#4f46e5;color:white;border:none;border-radius:8px;cursor:pointer;">Найти</button>
+</form>
+</body></html>"""
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
