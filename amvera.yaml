@@ -6,4 +6,3 @@ meta:
 
 run:
   command: python backend/main.py
-  port: 80
