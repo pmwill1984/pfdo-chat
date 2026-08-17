@@ -8,5 +8,5 @@ build:
   requirements: backend/requirements.txt
 
 run:
-  command: cd backend && python main.py
+  command: cd backend && gunicorn --bind 0.0.0.0:80 main:app
   port: 80
