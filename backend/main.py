@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import json
-import os
 import re
 import random
 import sys
@@ -70,9 +69,4 @@ def chat():
     return jsonify({"success": True, "type": "knowledge", "answer": "Ничего не найдено"})
 
 if __name__ == "__main__":
-    import os
-amvera_port = os.environ.get("PORT") or os.environ.get("AMVERA_PORT") or os.environ.get("APP_PORT")
-if amvera_port:
-    app.run(host="0.0.0.0", port=int(amvera_port))
-else:
-    app.run(host="0.0.0.0")
+    if     app.run(host="0.0.0.0")
