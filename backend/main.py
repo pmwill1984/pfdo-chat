@@ -6,7 +6,7 @@ import re
 import random
 import sys
 
-sys.path.append(os.path.dirname(__file__))
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), ""))
 from knowledge_base import KNOWLEDGE_BASE, DIRECTIONS, REGIONS, find_answer
 
 app = Flask(__name__)
