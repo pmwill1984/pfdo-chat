@@ -7,4 +7,4 @@ meta:
 run:
   command: python backend/main.py
   persistenceMount: /data
-  containerPort: 8000
+  containerPort: 5000
