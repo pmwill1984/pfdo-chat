@@ -5,6 +5,5 @@ meta:
     version: "3.12"
 
 run:
-  command: cd backend && pip install -r requirements.txt && gunicorn --bind 0.0.0.0:80 main:app
-  port: 80
-# Updated Mon Aug 17 12:15:30 MSK 2026
+  command: cd backend && python main.py
+  port: 8000
