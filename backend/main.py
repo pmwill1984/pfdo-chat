@@ -70,4 +70,9 @@ def chat():
     return jsonify({"success": True, "type": "knowledge", "answer": "Ничего не найдено"})
 
 if __name__ == "__main__":
+    import os
+amvera_port = os.environ.get("PORT") or os.environ.get("AMVERA_PORT") or os.environ.get("APP_PORT")
+if amvera_port:
+    app.run(host="0.0.0.0", port=int(amvera_port))
+else:
     app.run(host="0.0.0.0")
