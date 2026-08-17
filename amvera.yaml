@@ -5,6 +5,6 @@ meta:
     version: "3.12"
 
 run:
-  command: cd backend && gunicorn main:app --bind 0.0.0.0:$PORT
+  command: python backend/main.py
   persistenceMount: /data
-  containerPort: 80
+  containerPort: 8000
