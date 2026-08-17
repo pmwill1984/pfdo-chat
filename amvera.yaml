@@ -5,4 +5,4 @@ meta:
     version: "3.12"
 
 run:
-  command: cd backend && gunicorn main:app
+  command: python backend/main.py
