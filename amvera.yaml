@@ -5,5 +5,5 @@ meta:
     version: "3.12"
 
 run:
-  command: python backend/main.py
+  command: backend/main.py
   port: 8000
