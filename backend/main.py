@@ -68,5 +68,3 @@ def chat():
     
     return jsonify({"success": True, "type": "knowledge", "answer": "Ничего не найдено"})
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0")
