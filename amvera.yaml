@@ -5,4 +5,4 @@ meta:
     version: "3.12"
 
 run:
-  command: python backend/main.py
+  command: cd backend && gunicorn --bind 0.0.0.0:$PORT main:app
