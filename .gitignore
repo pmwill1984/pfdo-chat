@@ -8,3 +8,11 @@ venv/
 .vercel/
 node_modules/
 *.log
+.vercel
+.env*
+
+# Большие файлы
+*.json.bak
+backend/orgs_full_programs.json
+api/orgs_full_programs.json
+

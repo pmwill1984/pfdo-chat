@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ChatBolt ПФДО</title>
+    <style>
+        :root { --primary: #4f46e5; --border: #e2e8f0; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; width: 100%; overflow: hidden; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex; justify-content: center; align-items: center;
+            padding: 0;
+            margin: 0;
+        }
+        .chat-wrapper {
+            width: 440px; max-width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            max-height: 100vh;
+            max-height: 100dvh;
+            background: white; border-radius: 0;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        @media (min-width: 768px) {
+            .chat-wrapper {
+                height: 720px;
+                max-height: 90vh;
+                border-radius: 20px;
+            }
+        }
+        .chat-header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white; padding: 16px 20px;
+            display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+        }
+        .bot-avatar {
+            width: 44px; height: 44px; border-radius: 14px;
+            background: rgba(255,255,255,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; flex-shrink: 0;
+        }
+        .header-title { font-size: 17px; font-weight: 700; }
+        .header-status { font-size: 11px; opacity: 0.9; display: flex; align-items: center; gap: 5px; }
+        .status-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #10b981; display: inline-block;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); }
+            50% { box-shadow: 0 0 0 5px rgba(16,185,129,0); }
+        }
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 12px;
+            background: #f8fafc;
+            min-height: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        .message { display: flex; margin-bottom: 14px; animation: msgIn 0.3s; }
+        @keyframes msgIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .message.user { flex-direction: row-reverse; }
+        .message-avatar {
+            width: 32px; height: 32px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; flex-shrink: 0;
+        }
+        .message.bot .message-avatar { background: #e2e8f0; margin-right: 10px; }
+        .message.user .message-avatar { background: #4f46e5; margin-left: 10px; color: white; }
+        .message-bubble {
+            max-width: calc(100% - 50px);
+            padding: 12px 16px; border-radius: 16px;
+            font-size: 13.5px; line-height: 1.55; word-wrap: break-word;
+        }
+        .message.bot .message-bubble { background: white; border: 1px solid var(--border); }
+        
+        .org-card {
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 12px;
+            margin: 5px 0;
+            transition: all 0.2s;
+            border: 1px solid #e2e8f0;
+        }
+        .org-card:hover {
+            background: #f0f4ff;
+            border-color: #4f46e5;
+            transform: scale(1.02);
+        }
+        .org-card:active {
+            transform: scale(0.98);
+        }
+        .message.user .message-bubble { background: #4f46e5; color: white; }
+        .org-card {
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 10px;
+            margin: 5px 0;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+        .org-card:hover {
+            background: #e0e7ff;
+            border-color: #4f46e5;
+        }
+        .quick-actions {
+            display: flex; gap: 6px; padding: 10px 12px;
+            background: white; border-top: 1px solid var(--border);
+            flex-wrap: wrap; justify-content: center; flex-shrink: 0;
+        }
+        .quick-btn {
+            padding: 8px 14px; background: #f1f5f9;
+            border: 1px solid var(--border); border-radius: 20px;
+            cursor: pointer; font-size: 12px; white-space: nowrap;
+            transition: all 0.2s;
+        }
+        .quick-btn:hover { background: #4f46e5; color: white; }
+        .chat-input {
+            display: flex;
+            align-items: center;
+            padding: 12px 14px;
+            gap: 8px;
+            background: white;
+            border-top: 1px solid var(--border);
+            flex-shrink: 0;
+            position: relative;
+            z-index: 9999;
+        }
+        .chat-input input {
+            flex: 1; min-width: 0; padding: 12px 16px;
+            border: 2px solid var(--border); border-radius: 24px;
+            font-size: 13.5px; outline: none; height: 44px;
+        }
+        .chat-input input:focus { border-color: #4f46e5; }
+        
+        /* Анимация "бот думает" */
+        .thinking-dots {
+            display: inline-flex;
+            gap: 4px;
+            align-items: center;
+            padding: 8px 0;
+        }
+        .thinking-dots span {
+            width: 8px;
+            height: 8px;
+            background: #4f46e5;
+            border-radius: 50%;
+            animation: think 1.4s infinite;
+        }
+        .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes think {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+        
+        .thinking-text {
+            color: #6b7280;
+            font-size: 12px;
+            font-style: italic;
+        }
+        .send-btn {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: #4f46e5; color: white; border: none;
+            cursor: pointer; font-size: 18px; flex-shrink: 0;
+        }
+        @media (max-width: 360px) {
+            .chat-header {
+                padding: 10px 14px;
+            }
+            .bot-avatar {
+                width: 36px;
+                height: 36px;
+                font-size: 18px;
+            }
+            .header-title {
+                font-size: 15px;
+            }
+            .chat-input input {
+                font-size: 11px;
+            }
+            .quick-btn {
+                font-size: 10px;
+                padding: 5px 8px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .chat-wrapper { 
+                width: 100%; 
+                height: 100vh; 
+                height: 100dvh;
+                border-radius: 0; 
+                max-height: 100vh;
+                max-height: 100dvh;
+            }
+            .chat-messages {
+                padding: 10px 8px;
+            }
+            .message-bubble {
+                max-width: calc(100% - 44px);
+                font-size: 12.5px;
+                padding: 10px 12px;
+            }
+            .message-avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 14px;
+            }
+            .chat-input {
+                padding: 8px 10px;
+                gap: 6px;
+            }
+            .chat-input input {
+                height: 38px;
+                font-size: 12px;
+                padding: 8px 12px;
+                border-radius: 19px;
+            }
+            .send-btn {
+                width: 38px;
+                height: 38px;
+                font-size: 16px;
+            }
+            .quick-actions {
+                padding: 6px;
+                gap: 4px;
+            }
+            .quick-btn {
+                padding: 6px 10px;
+                font-size: 11px;
+                border-radius: 16px;
+            }
+        }
+            .chat-wrapper { width: 100%; height: 100vh; border-radius: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-wrapper">
+        <div class="chat-header">
+            <div class="bot-avatar">🤖</div>
+            <div>
+                <div class="header-title">ChatBolt ПФДО</div>
+                <div class="header-status"><span class="status-dot"></span> Онлайн</div>
+            </div>
+        </div>
+        <div class="chat-messages" id="messages"></div>
+        <div class="quick-actions">
+            <button class="quick-btn" onclick="quickAsk('Что такое ПФДО?')">📖 О ПФДО</button>
+            <button class="quick-btn" onclick="quickAsk('Как получить сертификат?')">📝 Сертификат</button>
+            <button class="quick-btn" onclick="quickAsk('Подробнее')">📖 Подробнее</button>
+            <button class="quick-btn" onclick="randomOrg()">🎲 Мне повезёт</button>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="input" placeholder="Задайте вопрос..." onkeypress="if(event.key==='Enter') sendMessage()">
+            <button class="send-btn" onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+    
+    <script>
+        var API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+            ? 'http://127.0.0.1:8000'
+            : window.location.origin;
+        
+        function addMessage(type, text) {
+            var messages = document.getElementById('messages');
+            var div = document.createElement('div');
+            div.className = 'message ' + type;
+            div.innerHTML = '<div class="message-avatar">' + (type === 'bot' ? '🤖' : '👤') + '</div><div class="message-bubble">' + text.replace(/\n/g, '<br>') + '</div>';
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+        
+        // Приветствие — вызываем сразу
+        var greetings = [
+        '👋 Здравствуйте!\n\nЯ ChatBolt — умный помощник ПФДО.\n\n📖 Отвечу на вопросы\n🔍 Найду организации\n✅ Проверю ИНН\n\n🔥 Сделано в качестве извинения перед братом, с которым мы когда-то жарили муравьёв)',
+        '😊 Приветствую!\n\nЯ помогу разобраться с ПФДО.\n\n💡 Подскажу по сертификату\n🔍 Найду кружки\n✅ Проверю организации\n\n🔥 Сделано в качестве извинения перед братом, с которым мы когда-то жарили муравьёв)',
+        '🎯 Добрый день!\n\nЯ знаю всё о дополнительном образовании!\n\n📖 60+ тем\n📊 19 273 организации\n🔍 30+ направлений\n\n🔥 Сделано в качестве извинения перед братом, с которым мы когда-то жарили муравьёв)',
+        '🌟 Привет!\n\nЯ здесь, чтобы помочь с выбором кружков!\n\n⚽ Спорт\n🎨 Творчество\n💻 IT\n\n🔥 Сделано в качестве извинения перед братом, с которым мы когда-то жарили муравьёв)',
+        '👋 Здравствуй!\n\nЯ ChatBolt ПФДО!\n\n🤖 Обучен на 60+ темах\n📍 Знаю 14 864 адреса\n🎯 Помогу найти кружок\n\n🔥 Сделано в качестве извинения перед братом, с которым мы когда-то жарили муравьёв)'
+    ];
+    
+    var randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+    addMessage('bot', randomGreeting);
+        
+        function showThinking() {
+            var messages = document.getElementById('messages');
+            var div = document.createElement('div');
+            div.className = 'message bot';
+            div.id = 'thinking';
+            div.innerHTML = '<div class="message-avatar">🤖</div><div class="message-bubble"><div class="thinking-dots"><span></span><span></span><span></span></div><div class="thinking-text">Думаю...</div></div>';
+            messages.appendChild(div);
+            messages.scrollTop = messages.scrollHeight;
+        }
+        
+        function hideThinking() {
+            var el = document.getElementById('thinking');
+            if (el) el.remove();
+        }
+        
+        function sendMessage() {
+            var input = document.getElementById('input');
+            var query = input.value.trim();
+            if (!query) return;
+            
+            addMessage('user', query);
+            input.value = '';
+            showThinking();
+            
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', API_URL + '/api/chat?query=' + encodeURIComponent(query), true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    hideThinking();
+                    if (xhr.status === 200) {
+                        try {
+                            var data = JSON.parse(xhr.responseText);
+                            if (data.type === 'knowledge') {
+                                addMessage('bot', data.answer);
+                            } else if (data.type === 'organization') {
+                                addMessage('bot', data.formatted || '📋 Организация');
+                            } else if (data.type === 'search_list') {
+                                if (data.organizations && data.organizations.length > 0) {
+                                    data.organizations.forEach(function(org) {
+                                        var html = '<div class="org-card" data-inn="' + org.inn + '">' +
+                                            '<b>' + org.index + '. ' + org.name + '</b><br>' +
+                                            '🔢 ' + org.inn + '<br>' +
+                                            (org.region ? '🏛 ' + org.region + '<br>' : '') +
+                                            '✅ ' + org.status + '<br>' +
+                                            '<i style="font-size:11px;color:#6b7280;">👆 Нажми для деталей</i></div>';
+                                        addMessage('bot', html);
+                                    });
+                                }
+                                data.organizations.forEach(function(org) {
+                                    var text = '<div class="org-card" data-inn="' + org.inn + '">' +
+                                        '<b>' + org.index + '. ' + org.name + '</b><br>' +
+                                        '🔢 ' + org.inn + '<br>' +
+                                        (org.region ? '🏛 ' + org.region + '<br>' : '') +
+                                        '✅ Статус: ' + org.status + '<br>' +
+                                        '<i style="color:#6b7280;font-size:11px;">👆 Нажмите для деталей</i></div>';
+                                    addMessage('bot', text);
+                                });
+                            } else if (data.type === 'search') {
+                                addMessage('bot', data.formatted || ('Найдено: ' + data.count));
+                            }
+                        } catch(e) {
+                            addMessage('bot', '❌ Ошибка обработки');
+                        }
+                    } else {
+                        addMessage('bot', '❌ Ошибка ' + xhr.status);
+                    }
+                }
+            };
+            xhr.onerror = function() {
+                addMessage('bot', '❌ Ошибка сети. Проверьте, запущен ли backend.');
+            };
+            xhr.send();
+        }
+        
+        function showOrgDetails(orgName) {
+            document.getElementById('input').value = orgName;
+            sendMessage();
+        }
+        
+        // Клик по организации
+        document.addEventListener('click', function(e) {
+            var bubble = e.target.closest('.message-bubble');
+            if (bubble) {
+                var text = bubble.textContent;
+                // Ищем ИНН в тексте
+                var innMatch = text.match(/ИНН:\s*(\d{10,12})/);
+                if (innMatch) {
+                    var inn = innMatch[1];
+                    document.getElementById('input').value = inn;
+                    sendMessage();
+                }
+            }
+        });
+        
+        // Клик по карточке организации
+        document.addEventListener('click', function(e) {
+            var card = e.target.closest('.org-card');
+            if (card) {
+                var inn = card.getAttribute('data-inn');
+                if (inn) {
+                    addMessage('user', 'Показать детали: ' + inn);
+                    document.getElementById('input').value = inn;
+                    sendMessage();
+                }
+            }
+        });
+        
+        // Клик по карточке — отправляет ИНН
+        document.addEventListener('click', function(e) {
+            var target = e.target;
+            // Ищем data-inn в любом родителе
+            while (target && target !== document) {
+                if (target.classList && target.classList.contains('org-card')) {
+                    var inn = target.getAttribute('data-inn');
+                    if (inn) {
+                        document.getElementById('input').value = inn;
+                        sendMessage();
+                    }
+                    break;
+                }
+                target = target.parentNode;
+            }
+        });
+        
+        function quickAsk(text) {
+            document.getElementById('input').value = text;
+            sendMessage();
+        }
+        
+        function randomOrg() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', API_URL + '/api/random', true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    if (data.success && data.formatted) {
+                        addMessage('bot', data.formatted);
+                    }
+                }
+            };
+            xhr.send();
+        }
+    </script>
+</body>
+</html>
